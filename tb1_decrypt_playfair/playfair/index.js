@@ -1,10 +1,11 @@
 const size = 5;
+String.prototype.normalizeFct = function(){ return this.normalize('NFD').replace(/[\u0300-\u036f]/g, "") }
 function matrizGenerator(key) {
     const alphabet = 'abcdefghiklmnopqrstuvwxyz'.toUpperCase();
     const preMatriz = new Set();
     const matriz = [];
     matriz.length = size;
-    [...key.toUpperCase(), ...alphabet].forEach(e => preMatriz.add(e));
+    [...key.toUpperCase().normalizeFct(), ...alphabet].forEach(e => preMatriz.add(e));
 
     const arr = Array.from(preMatriz);
     for (let i = 0; i < matriz.length; i++) {
@@ -13,7 +14,7 @@ function matrizGenerator(key) {
     return matriz;
 }
 
-const clean = text => text.replace(/\s/ig, '').toUpperCase();
+const clean = text => text.replace(/\s/ig, '').toUpperCase().normalizeFct();
 
 function getPair(pair, matriz, decrypt = -1){
     let v1 = -1;
@@ -61,8 +62,13 @@ function getPair(pair, matriz, decrypt = -1){
             row1 =  row1 !== 4 ? row1 + 1 : 0;
         }
     }
-
-    return matriz[row0][v2] + matriz[row1][v1];
+    try{
+        return matriz[row0][v2] + matriz[row1][v1];
+    }catch(e){
+        console.log(matriz);
+        console.log(row0, v2, row1, v1);
+        return 'XX';
+    }    
 }
 
 const cypher = (matriz) => (text) => { 
@@ -85,8 +91,9 @@ const cypher = (matriz) => (text) => {
 };
 
 const exec = (key) => cypher(matrizGenerator(key));
-const executor = exec('Vamos falar algo mais er').encrypt();
-const done = exec(executor).decrypt();
+const executor = exec('teste')('a pá do fogão que caiu atrás da guerra').encrypt();
+const done = exec('teste')(executor).decrypt();
+console.log(executor, done)
 
 module.exports = {
     exec, 
