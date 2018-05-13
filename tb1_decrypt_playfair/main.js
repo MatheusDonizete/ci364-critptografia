@@ -109,7 +109,7 @@ function breaker(text) {
         }
     });
 
-    return { text: brokenText, key, score };
+    return { text: brokenText, key, score: score[0], count: score.length };
 }
 
 
